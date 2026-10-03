@@ -1,3 +1,4 @@
+import { Link, useLocation } from 'react-router-dom'
 import { Users, LayoutGrid, LogOut, X, ShieldCheck } from 'lucide-react'
 
 // Company geometric building logo matching login screen
@@ -12,16 +13,20 @@ function CompanyLogo({ className = 'w-7 h-7' }) {
   )
 }
 
-export default function Sidebar({ activeTab, onSelectTab, isOpen, onClose, onSignOut, user }) {
+export default function Sidebar({ isOpen, onClose, onSignOut, user }) {
+  const location = useLocation()
+
   const navItems = [
     {
-      id: 'users',
+      id: 'usermanagement',
+      path: '/usermanagement',
       label: 'User Management',
       icon: Users,
       description: 'Manage employees & access',
     },
     {
       id: 'apps',
+      path: '/apps',
       label: 'Apps',
       icon: LayoutGrid,
       description: 'Connected applications',
@@ -76,13 +81,18 @@ export default function Sidebar({ activeTab, onSelectTab, isOpen, onClose, onSig
             </p>
             {navItems.map((item) => {
               const Icon = item.icon
-              const isActive = activeTab === item.id
+              const isActive =
+                item.path === '/usermanagement'
+                  ? location.pathname === '/usermanagement' ||
+                    location.pathname === '/users' ||
+                    location.pathname === '/'
+                  : location.pathname.startsWith(item.path)
 
               return (
-                <button
+                <Link
                   key={item.id}
+                  to={item.path}
                   onClick={() => {
-                    onSelectTab(item.id)
                     if (onClose) onClose()
                   }}
                   className={`w-full flex items-center gap-3.5 px-3.5 py-3 rounded-2xl text-left transition-all duration-200 cursor-pointer ${
@@ -106,7 +116,7 @@ export default function Sidebar({ activeTab, onSelectTab, isOpen, onClose, onSig
                       {item.description}
                     </p>
                   </div>
-                </button>
+                </Link>
               )
             })}
           </nav>

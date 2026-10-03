@@ -1,19 +1,19 @@
 import { useState } from 'react'
+import { Outlet, useLocation } from 'react-router-dom'
 import Sidebar from './Sidebar.jsx'
-import UserManagement from './UserManagement.jsx'
-import Apps from './Apps.jsx'
 import { Menu } from 'lucide-react'
 
 export default function AdminDashboard({ user, onSignOut }) {
-  const [activeTab, setActiveTab] = useState('users')
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const location = useLocation()
+
+  const isApps = location.pathname.startsWith('/apps')
+  const pageTitle = isApps ? 'Apps' : 'User Management'
 
   return (
     <div className="h-screen w-screen bg-slate-50 flex font-sans select-none overflow-hidden">
       {/* Sidebar Component */}
       <Sidebar
-        activeTab={activeTab}
-        onSelectTab={setActiveTab}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         onSignOut={onSignOut}
@@ -33,7 +33,7 @@ export default function AdminDashboard({ user, onSignOut }) {
             </button>
             <div>
               <h2 className="text-lg font-bold text-slate-900 tracking-tight">
-                {activeTab === 'users' ? 'User Management' : 'Apps'}
+                {pageTitle}
               </h2>
               <p className="text-xs text-slate-500 hidden sm:block">
                 Centralized Authentication & Authorization Control
@@ -52,12 +52,12 @@ export default function AdminDashboard({ user, onSignOut }) {
           </div>
         </header>
 
-        {/* Dynamic Tab Body */}
+        {/* Dynamic Route Content */}
         <main className="p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
-          {activeTab === 'users' && <UserManagement />}
-          {activeTab === 'apps' && <Apps />}
+          <Outlet />
         </main>
       </div>
     </div>
   )
 }
+

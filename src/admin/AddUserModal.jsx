@@ -15,6 +15,8 @@ import {
   CheckSquare,
   Square,
   Sparkles,
+  Clock,
+  Package,
 } from 'lucide-react'
 
 // LEADS PERMISSION DEFINITIONS GROUPED BY MODULE
@@ -177,6 +179,72 @@ export const ACCOUNTS_PERMISSIONS_SCHEMA = [
   },
 ]
 
+// TIMETRACKER PERMISSIONS SCHEMA
+export const TIMETRACKER_PERMISSIONS_SCHEMA = [
+  {
+    module: 'Attendance & Clocking',
+    permissions: [
+      { id: 'time.clock.checkin_checkout', label: 'Check-in & Check-out' },
+      { id: 'time.clock.view_own_logs', label: 'View own attendance logs' },
+      { id: 'time.clock.view_all_logs', label: 'View all employee logs' },
+      { id: 'time.clock.manual_entry', label: 'Mark manual attendance' },
+    ],
+  },
+  {
+    module: 'Leave Management',
+    permissions: [
+      { id: 'time.leave.apply', label: 'Apply for leaves' },
+      { id: 'time.leave.view_own', label: 'View own leave status' },
+      { id: 'time.leave.approve_reject', label: 'Approve / reject leaves' },
+      { id: 'time.leave.manage_quotas', label: 'Assign leave quotas' },
+    ],
+  },
+  {
+    module: 'Attendance Reports',
+    permissions: [
+      { id: 'time.reports.view', label: 'View attendance registers' },
+      { id: 'time.reports.export', label: 'Export monthly time reports' },
+    ],
+  },
+]
+
+// ASSETSOFT PERMISSIONS SCHEMA
+export const ASSETSOFT_PERMISSIONS_SCHEMA = [
+  {
+    module: 'Asset Inventory',
+    permissions: [
+      { id: 'asset.inventory.view', label: 'View asset inventory' },
+      { id: 'asset.inventory.add', label: 'Add new asset (PC, Table, Chair)' },
+      { id: 'asset.inventory.edit', label: 'Edit asset details' },
+      { id: 'asset.inventory.delete', label: 'Retire / delete asset' },
+    ],
+  },
+  {
+    module: 'Asset Allocation',
+    permissions: [
+      { id: 'asset.allocation.view_own', label: 'View assigned assets' },
+      { id: 'asset.allocation.assign', label: 'Allocate asset to staff' },
+      { id: 'asset.allocation.revoke', label: 'Revoke & return assets' },
+      { id: 'asset.allocation.history', label: 'View allocation history' },
+    ],
+  },
+  {
+    module: 'Maintenance & Audit',
+    permissions: [
+      { id: 'asset.maintenance.request', label: 'Request asset repair' },
+      { id: 'asset.maintenance.approve_log', label: 'Approve repair & log costs' },
+      { id: 'asset.maintenance.audit', label: 'Conduct physical asset audit' },
+    ],
+  },
+  {
+    module: 'Asset Reports',
+    permissions: [
+      { id: 'asset.reports.view', label: 'View asset register' },
+      { id: 'asset.reports.export', label: 'Export asset reports' },
+    ],
+  },
+]
+
 // ROLE PRESETS MAP FOR AUTO SELECTION
 const LEADS_PRESETS = {
   Manager: [
@@ -294,6 +362,50 @@ const ACCOUNTS_PRESETS = {
     'accounts.invoices.generate',
     'accounts.payments.record',
     'accounts.reports.view',
+  ],
+}
+
+const TIMETRACKER_PRESETS = {
+  'HR Manager': [
+    'time.clock.checkin_checkout',
+    'time.clock.view_own_logs',
+    'time.clock.view_all_logs',
+    'time.clock.manual_entry',
+    'time.leave.apply',
+    'time.leave.view_own',
+    'time.leave.approve_reject',
+    'time.leave.manage_quotas',
+    'time.reports.view',
+    'time.reports.export',
+  ],
+  Employee: [
+    'time.clock.checkin_checkout',
+    'time.clock.view_own_logs',
+    'time.leave.apply',
+    'time.leave.view_own',
+  ],
+}
+
+const ASSETSOFT_PRESETS = {
+  'Asset Manager': [
+    'asset.inventory.view',
+    'asset.inventory.add',
+    'asset.inventory.edit',
+    'asset.inventory.delete',
+    'asset.allocation.view_own',
+    'asset.allocation.assign',
+    'asset.allocation.revoke',
+    'asset.allocation.history',
+    'asset.maintenance.request',
+    'asset.maintenance.approve_log',
+    'asset.maintenance.audit',
+    'asset.reports.view',
+    'asset.reports.export',
+  ],
+  Staff: [
+    'asset.inventory.view',
+    'asset.allocation.view_own',
+    'asset.maintenance.request',
   ],
 }
 
@@ -422,6 +534,8 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
     leads: true,
     projectsoft: false,
     accountsoft: false,
+    timetracker: false,
+    assetsoft: false,
   })
 
   // Roles per app
@@ -429,12 +543,14 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
     leads: 'Staff',
     projectsoft: 'Developer',
     accountsoft: 'Accounts Executive',
+    timetracker: 'Employee',
+    assetsoft: 'Staff',
   })
 
   // Granular permissions map: { [permissionId]: boolean }
   const [permissions, setPermissions] = useState({})
 
-  // Active sub-tab in step 2 (e.g. leads, projectsoft, accountsoft)
+  // Active sub-tab in step 2 (e.g. leads, projectsoft, accountsoft, timetracker, assetsoft)
   const [activeAppTab, setActiveAppTab] = useState('leads')
 
   // Synchronize and reset state on modal open or when editingUser changes
@@ -457,21 +573,29 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
         const hasLeads = editingUser.apps?.some((a) => a.name.toLowerCase() === 'leads') ?? false
         const hasProj = editingUser.apps?.some((a) => a.name.toLowerCase() === 'projectsoft') ?? false
         const hasAcc = editingUser.apps?.some((a) => a.name.toLowerCase() === 'accountsoft') ?? false
+        const hasTime = editingUser.apps?.some((a) => a.name.toLowerCase().includes('time')) ?? false
+        const hasAsset = editingUser.apps?.some((a) => a.name.toLowerCase().includes('asset')) ?? false
 
         setSelectedApps({
           leads: hasLeads,
           projectsoft: hasProj,
           accountsoft: hasAcc,
+          timetracker: hasTime,
+          assetsoft: hasAsset,
         })
 
         const leadsRole = editingUser.apps?.find((a) => a.name.toLowerCase() === 'leads')?.role || 'Staff'
         const projRole = editingUser.apps?.find((a) => a.name.toLowerCase() === 'projectsoft')?.role || 'Developer'
         const accRole = editingUser.apps?.find((a) => a.name.toLowerCase() === 'accountsoft')?.role || 'Accounts Executive'
+        const timeRole = editingUser.apps?.find((a) => a.name.toLowerCase().includes('time'))?.role || 'Employee'
+        const assetRole = editingUser.apps?.find((a) => a.name.toLowerCase().includes('asset'))?.role || 'Staff'
 
         setAppRoles({
           leads: leadsRole,
           projectsoft: projRole,
           accountsoft: accRole,
+          timetracker: timeRole,
+          assetsoft: assetRole,
         })
 
         if (editingUser.permissions && Object.keys(editingUser.permissions).length > 0) {
@@ -481,12 +605,16 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
           if (hasLeads) (LEADS_PRESETS[leadsRole] || LEADS_PRESETS.Staff).forEach((p) => (initial[p] = true))
           if (hasProj) (PROJECT_PRESETS[projRole] || PROJECT_PRESETS.Developer).forEach((p) => (initial[p] = true))
           if (hasAcc) (ACCOUNTS_PRESETS[accRole] || ACCOUNTS_PRESETS['Accounts Executive']).forEach((p) => (initial[p] = true))
+          if (hasTime) (TIMETRACKER_PRESETS[timeRole] || TIMETRACKER_PRESETS.Employee).forEach((p) => (initial[p] = true))
+          if (hasAsset) (ASSETSOFT_PRESETS[assetRole] || ASSETSOFT_PRESETS.Staff).forEach((p) => (initial[p] = true))
           setPermissions(initial)
         }
 
         if (hasLeads) setActiveAppTab('leads')
         else if (hasProj) setActiveAppTab('projectsoft')
         else if (hasAcc) setActiveAppTab('accountsoft')
+        else if (hasTime) setActiveAppTab('timetracker')
+        else if (hasAsset) setActiveAppTab('assetsoft')
         else setActiveAppTab('leads')
       } else {
         // Reset to initial clean state for new user
@@ -505,16 +633,22 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
           leads: true,
           projectsoft: false,
           accountsoft: false,
+          timetracker: false,
+          assetsoft: false,
         })
         setAppRoles({
           leads: 'Staff',
           projectsoft: 'Developer',
           accountsoft: 'Accounts Executive',
+          timetracker: 'Employee',
+          assetsoft: 'Staff',
         })
         const initial = {}
         LEADS_PRESETS.Staff.forEach((p) => (initial[p] = true))
         PROJECT_PRESETS.Developer.forEach((p) => (initial[p] = true))
         ACCOUNTS_PRESETS['Accounts Executive'].forEach((p) => (initial[p] = true))
+        TIMETRACKER_PRESETS.Employee.forEach((p) => (initial[p] = true))
+        ASSETSOFT_PRESETS.Staff.forEach((p) => (initial[p] = true))
         setPermissions(initial)
         setActiveAppTab('leads')
       }
@@ -539,49 +673,37 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
     setAppRoles((prev) => ({ ...prev, [appKey]: newRole }))
 
     let presetPermissions = []
+    let schemaToClear = []
+
     if (appKey === 'leads') {
       presetPermissions = LEADS_PRESETS[newRole] || []
-      setPermissions((prev) => {
-        const next = { ...prev }
-        LEADS_PERMISSIONS_SCHEMA.forEach((g) =>
-          g.permissions.forEach((p) => {
-            delete next[p.id]
-          })
-        )
-        presetPermissions.forEach((p) => {
-          next[p] = true
-        })
-        return next
-      })
+      schemaToClear = LEADS_PERMISSIONS_SCHEMA
     } else if (appKey === 'projectsoft') {
       presetPermissions = PROJECT_PRESETS[newRole] || []
-      setPermissions((prev) => {
-        const next = { ...prev }
-        PROJECT_PERMISSIONS_SCHEMA.forEach((g) =>
-          g.permissions.forEach((p) => {
-            delete next[p.id]
-          })
-        )
-        presetPermissions.forEach((p) => {
-          next[p] = true
-        })
-        return next
-      })
+      schemaToClear = PROJECT_PERMISSIONS_SCHEMA
     } else if (appKey === 'accountsoft') {
       presetPermissions = ACCOUNTS_PRESETS[newRole] || []
-      setPermissions((prev) => {
-        const next = { ...prev }
-        ACCOUNTS_PERMISSIONS_SCHEMA.forEach((g) =>
-          g.permissions.forEach((p) => {
-            delete next[p.id]
-          })
-        )
-        presetPermissions.forEach((p) => {
-          next[p] = true
-        })
-        return next
-      })
+      schemaToClear = ACCOUNTS_PERMISSIONS_SCHEMA
+    } else if (appKey === 'timetracker') {
+      presetPermissions = TIMETRACKER_PRESETS[newRole] || []
+      schemaToClear = TIMETRACKER_PERMISSIONS_SCHEMA
+    } else if (appKey === 'assetsoft') {
+      presetPermissions = ASSETSOFT_PRESETS[newRole] || []
+      schemaToClear = ASSETSOFT_PERMISSIONS_SCHEMA
     }
+
+    setPermissions((prev) => {
+      const next = { ...prev }
+      schemaToClear.forEach((g) =>
+        g.permissions.forEach((p) => {
+          delete next[p.id]
+        })
+      )
+      presetPermissions.forEach((p) => {
+        next[p] = true
+      })
+      return next
+    })
   }
 
   // Toggle single permission checkbox
@@ -637,6 +759,20 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
         color: 'bg-emerald-50 text-emerald-700 border-emerald-200',
       })
     }
+    if (selectedApps.timetracker) {
+      assignedApps.push({
+        name: 'Time Tracker',
+        role: appRoles.timetracker,
+        color: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+      })
+    }
+    if (selectedApps.assetsoft) {
+      assignedApps.push({
+        name: 'AssetSoft',
+        role: appRoles.assetsoft,
+        color: 'bg-blue-50 text-blue-700 border-blue-200',
+      })
+    }
 
     if (assignedApps.length === 0) {
       alert('Please select at least one application for the user.')
@@ -684,7 +820,7 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 backdrop-blur-xs font-sans animate-in fade-in duration-200">
-      <div className="bg-white rounded-[24px] w-full max-w-xl sm:max-w-[640px] max-h-[90vh] shadow-2xl flex flex-col overflow-hidden border border-slate-200">
+      <div className="bg-white rounded-[24px] w-full max-w-xl sm:max-w-[660px] max-h-[90vh] shadow-2xl flex flex-col overflow-hidden border border-slate-200">
         {/* Modal Header */}
         <div className="px-5 sm:px-6 py-4 bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 text-white flex items-center justify-between shrink-0">
           <div>
@@ -861,6 +997,28 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
                 accentText: 'text-emerald-600',
                 lightBg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
               },
+              {
+                key: 'timetracker',
+                name: 'Time Tracker',
+                subtitle: 'Attendance & Leaves',
+                icon: Clock,
+                roles: ['Employee', 'HR Manager'],
+                schema: TIMETRACKER_PERMISSIONS_SCHEMA,
+                accentBg: 'bg-emerald-600',
+                accentText: 'text-emerald-600',
+                lightBg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+              },
+              {
+                key: 'assetsoft',
+                name: 'AssetSoft',
+                subtitle: 'Office Assets & Devices',
+                icon: Package,
+                roles: ['Staff', 'Asset Manager'],
+                schema: ASSETSOFT_PERMISSIONS_SCHEMA,
+                accentBg: 'bg-blue-600',
+                accentText: 'text-blue-600',
+                lightBg: 'bg-blue-50 text-blue-700 border-blue-200',
+              },
             ]
 
             const currentApp = APPS_CONFIG.find((a) => a.key === activeAppTab) || APPS_CONFIG[0]
@@ -870,7 +1028,7 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
               .filter((p) => permissions[p.id]).length
 
             return (
-              <div className="space-y-5">
+              <div className="space-y-4">
                 {/* 1. Unified Application Selector Cards */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
@@ -878,11 +1036,11 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
                       Select App To Configure
                     </p>
                     <span className="text-[11px] text-slate-400">
-                      {Object.values(selectedApps).filter(Boolean).length} of 3 Apps Enabled
+                      {Object.values(selectedApps).filter(Boolean).length} of 5 Apps Enabled
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {APPS_CONFIG.map((app) => {
                       const isEnabled = !!selectedApps[app.key]
                       const isSelectedTab = activeAppTab === app.key
@@ -892,7 +1050,7 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
                         <div
                           key={app.key}
                           onClick={() => setActiveAppTab(app.key)}
-                          className={`relative p-3 rounded-2xl border-2 transition-all cursor-pointer select-none ${
+                          className={`relative p-2.5 rounded-2xl border-2 transition-all cursor-pointer select-none ${
                             isSelectedTab
                               ? 'border-blue-600 bg-blue-50/40 shadow-sm ring-2 ring-blue-500/10'
                               : isEnabled
@@ -900,17 +1058,17 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
                               : 'border-slate-200/70 bg-slate-50/60 opacity-65 hover:opacity-100 hover:border-slate-300'
                           }`}
                         >
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex items-center gap-2.5">
+                          <div className="flex items-start justify-between gap-1.5">
+                            <div className="flex items-center gap-2">
                               <div
-                                className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
+                                className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 ${
                                   isEnabled ? app.accentBg + ' text-white shadow-xs' : 'bg-slate-200 text-slate-500'
                                 }`}
                               >
-                                <Icon className="w-4 h-4" />
+                                <Icon className="w-3.5 h-3.5" />
                               </div>
                               <div className="min-w-0">
-                                <p className="text-xs font-bold text-slate-900 leading-tight">
+                                <p className="text-xs font-bold text-slate-900 leading-tight truncate">
                                   {app.name}
                                 </p>
                                 <p className="text-[10px] text-slate-400 truncate">
@@ -928,28 +1086,28 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
                                 e.stopPropagation()
                                 toggleAppSelection(app.key)
                               }}
-                              className={`relative inline-flex h-4.5 w-8 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 focus:outline-none ${
+                              className={`relative inline-flex h-4 w-7 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 focus:outline-none ${
                                 isEnabled ? 'bg-emerald-500' : 'bg-slate-300'
                               }`}
                             >
                               <span
-                                className={`inline-block h-3 w-3 transform rounded-full bg-white shadow-xs transition-transform duration-200 ${
-                                  isEnabled ? 'translate-x-4' : 'translate-x-1'
+                                className={`inline-block h-2.5 w-2.5 transform rounded-full bg-white shadow-xs transition-transform duration-200 ${
+                                  isEnabled ? 'translate-x-3.5' : 'translate-x-0.5'
                                 }`}
                               />
                             </button>
                           </div>
 
-                          <div className="mt-2.5 pt-2 border-t border-slate-100/80 flex items-center justify-between text-[10px]">
+                          <div className="mt-2 pt-1.5 border-t border-slate-100/80 flex items-center justify-between text-[10px]">
                             <span
-                              className={`font-semibold ${
+                              className={`font-semibold truncate ${
                                 isEnabled ? 'text-slate-600' : 'text-slate-400 italic'
                               }`}
                             >
-                              {isEnabled ? `Role: ${appRoles[app.key]}` : 'Access Disabled'}
+                              {isEnabled ? `${appRoles[app.key]}` : 'Disabled'}
                             </span>
                             {isEnabled && (
-                              <span className="font-bold text-emerald-600">Active</span>
+                              <span className="font-bold text-emerald-600 shrink-0">Active</span>
                             )}
                           </div>
                         </div>
@@ -959,7 +1117,7 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
                 </div>
 
                 {/* 2. Dedicated Configuration Panel for the Selected App */}
-                <div className="bg-slate-50/70 border border-slate-200 rounded-2xl p-4 sm:p-5 space-y-4">
+                <div className="bg-slate-50/70 border border-slate-200 rounded-2xl p-4 space-y-3.5">
                   {/* Panel Header */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200/80">
                     <div className="flex items-center gap-2.5">
@@ -1005,9 +1163,9 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
 
                   {/* If App Access is Enabled */}
                   {isCurrentAppEnabled ? (
-                    <div className="space-y-4">
+                    <div className="space-y-3.5">
                       {/* Role Preset Selector */}
-                      <div className="bg-white p-3.5 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                      <div className="bg-white p-3 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-2xs">
                         <div>
                           <p className="text-xs font-bold text-slate-800">
                             {currentApp.name} Role Preset
@@ -1017,7 +1175,7 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
                           </p>
                         </div>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5">
                           {currentApp.roles.map((role) => (
                             <button
                               key={role}
@@ -1036,16 +1194,16 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
                       </div>
 
                       {/* Permissions Matrix by Modules */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                         {currentApp.schema.map((group) => {
                           const allChecked = group.permissions.every((p) => permissions[p.id])
 
                           return (
                             <div
                               key={group.module}
-                              className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs space-y-2.5"
+                              className="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs space-y-2"
                             >
-                              <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
+                              <div className="flex items-center justify-between border-b border-slate-100 pb-1">
                                 <span className="text-xs font-bold text-slate-800 tracking-tight">
                                   {group.module}
                                 </span>
@@ -1070,7 +1228,7 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
                                       onChange={() => togglePermission(p.id)}
                                       className="w-3.5 h-3.5 rounded mt-0.5 text-blue-600 focus:ring-blue-500 border-slate-300"
                                     />
-                                    <span className="leading-tight text-[11.5px]">{p.label}</span>
+                                    <span className="leading-tight text-[11px]">{p.label}</span>
                                   </label>
                                 ))}
                               </div>
@@ -1081,20 +1239,20 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
                     </div>
                   ) : (
                     /* If App Access is Disabled */
-                    <div className="py-8 px-4 text-center bg-white rounded-xl border border-dashed border-slate-300">
-                      <div className="w-10 h-10 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-2.5">
+                    <div className="py-7 px-4 text-center bg-white rounded-xl border border-dashed border-slate-300">
+                      <div className="w-10 h-10 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-2">
                         <currentApp.icon className="w-5 h-5" />
                       </div>
                       <p className="text-xs font-bold text-slate-700">
                         {currentApp.name} Access is Turned Off
                       </p>
-                      <p className="text-[11px] text-slate-400 max-w-xs mx-auto mt-1 mb-3">
+                      <p className="text-[11px] text-slate-400 max-w-xs mx-auto mt-0.5 mb-2.5">
                         This employee does not have access to {currentApp.name}. Click below to grant access and assign roles.
                       </p>
                       <button
                         type="button"
                         onClick={() => toggleAppSelection(currentApp.key)}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer"
+                        className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer"
                       >
                         Grant {currentApp.name} Access
                       </button>

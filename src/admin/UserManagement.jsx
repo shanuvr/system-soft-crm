@@ -10,8 +10,9 @@ const INITIAL_USERS = [
     department: 'Sales & Engineering',
     status: 'Active',
     apps: [
-      { name: 'Leads', role: 'Sales Executive', color: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
+      { name: 'Leads', role: 'Staff', color: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
       { name: 'ProjectSoft', role: 'Developer', color: 'bg-amber-50 text-amber-700 border-amber-200' },
+      { name: 'Time Tracker', role: 'Employee', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
     ],
   },
   {
@@ -21,7 +22,8 @@ const INITIAL_USERS = [
     department: 'Sales',
     status: 'Active',
     apps: [
-      { name: 'Leads', role: 'Sales Manager', color: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
+      { name: 'Leads', role: 'Manager', color: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
+      { name: 'Time Tracker', role: 'Employee', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
     ],
   },
   {
@@ -32,16 +34,20 @@ const INITIAL_USERS = [
     status: 'Active',
     apps: [
       { name: 'ProjectSoft', role: 'Developer', color: 'bg-amber-50 text-amber-700 border-amber-200' },
+      { name: 'AssetSoft', role: 'Staff', color: 'bg-blue-50 text-blue-700 border-blue-200' },
+      { name: 'Time Tracker', role: 'Employee', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
     ],
   },
   {
     id: 'EMP104',
     name: 'Sneha Patel',
     email: 'sneha@company.com',
-    department: 'Finance & Accounts',
-    status: 'Inactive',
+    department: 'Operations & HR',
+    status: 'Active',
     apps: [
-      { name: 'AccountSoft', role: 'Accounts Manager', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+      { name: 'AccountSoft', role: 'Accounts Manager', color: 'bg-teal-50 text-teal-700 border-teal-200' },
+      { name: 'Time Tracker', role: 'HR Manager', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+      { name: 'AssetSoft', role: 'Asset Manager', color: 'bg-blue-50 text-blue-700 border-blue-200' },
     ],
   },
 ]
@@ -144,14 +150,14 @@ export default function UserManagement() {
       {/* Users Table */}
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs sm:text-sm">
-            <thead className="bg-slate-50/75 text-slate-500 text-[11px] uppercase tracking-wider font-bold border-b border-slate-100">
+          <table className="w-full text-left text-xs sm:text-sm table-fixed min-w-[760px]">
+            <thead className="bg-slate-50/80 text-slate-500 text-[11px] uppercase tracking-wider font-bold border-b border-slate-100">
               <tr>
-                <th className="py-3.5 px-5">Employee</th>
-                <th className="py-3.5 px-5">Department</th>
-                <th className="py-3.5 px-5">Application Access & Roles</th>
-                <th className="py-3.5 px-5">Status</th>
-                <th className="py-3.5 px-5 text-right">Actions</th>
+                <th className="py-3.5 px-4 w-[25%] font-bold">Employee</th>
+                <th className="py-3.5 px-4 w-[16%] font-bold">Department</th>
+                <th className="py-3.5 px-4 w-[37%] font-bold">Application Access & Roles</th>
+                <th className="py-3.5 px-4 w-[10%] font-bold">Status</th>
+                <th className="py-3.5 px-4 w-[12%] text-right font-bold whitespace-nowrap">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -159,49 +165,53 @@ export default function UserManagement() {
                 const isActive = u.status === 'Active'
 
                 return (
-                  <tr key={u.id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="py-4 px-5">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-700 text-xs shrink-0">
+                  <tr key={u.id} className="hover:bg-slate-50/60 transition-colors">
+                    <td className="py-3.5 px-4">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-700 text-xs shrink-0">
                           {u.name[0]}
                         </div>
-                        <div>
-                          <p className="font-bold text-slate-900 leading-tight">{u.name}</p>
-                          <p className="text-[11px] text-slate-400 mt-0.5">
+                        <div className="min-w-0">
+                          <p className="font-bold text-slate-900 leading-tight text-xs sm:text-sm truncate">
+                            {u.name}
+                          </p>
+                          <p className="text-[11px] text-slate-400 mt-0.5 truncate">
                             {u.email} · <span className="font-mono">{u.id}</span>
                           </p>
                         </div>
                       </div>
                     </td>
-                    <td className="py-4 px-5 text-slate-600 font-medium">{u.department}</td>
-                    <td className="py-4 px-5">
-                      <div className="flex flex-wrap gap-1.5">
+                    <td className="py-3.5 px-4 text-slate-600 font-medium text-xs truncate">
+                      {u.department}
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <div className="flex flex-wrap gap-1 items-center">
                         {u.apps.map((app) => (
                           <span
                             key={app.name}
-                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold border ${app.color}`}
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold border ${app.color} tracking-tight`}
                           >
-                            <span>{app.name}</span>
-                            <span className="text-[9px] opacity-70">({app.role})</span>
+                            <span className="font-bold">{app.name}</span>
+                            <span className="opacity-70 text-[9px] font-medium">({app.role})</span>
                           </span>
                         ))}
                       </div>
                     </td>
-                    <td className="py-4 px-5">
+                    <td className="py-3.5 px-4">
                       {/* Interactive Toggle Button */}
-                      <div className="flex items-center gap-2.5">
+                      <div className="flex items-center gap-2">
                         <button
                           type="button"
                           role="switch"
                           aria-checked={isActive}
                           onClick={() => handleToggleStatus(u.id)}
-                          className={`relative inline-flex h-5 w-10 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${
+                          className={`relative inline-flex h-4.5 w-8.5 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${
                             isActive ? 'bg-emerald-500' : 'bg-slate-300'
                           }`}
                         >
                           <span
                             className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-xs transition-transform duration-200 ease-in-out ${
-                              isActive ? 'translate-x-5' : 'translate-x-1'
+                              isActive ? 'translate-x-4' : 'translate-x-0.5'
                             }`}
                           />
                         </button>
@@ -214,12 +224,13 @@ export default function UserManagement() {
                         </span>
                       </div>
                     </td>
-                    <td className="py-4 px-5 text-right">
+                    <td className="py-3.5 px-4 text-right whitespace-nowrap">
                       <button
                         onClick={() => handleManageAccess(u)}
-                        className="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline cursor-pointer"
+                        className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline cursor-pointer"
                       >
-                        Manage Access →
+                        <span>Manage Access</span>
+                        <span>→</span>
                       </button>
                     </td>
                   </tr>
