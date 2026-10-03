@@ -19,6 +19,49 @@ import {
   Package,
 } from 'lucide-react'
 
+// Official Leads 3x3 rounded grid logo icon
+export function LeadsLogoIcon({ className = 'w-4 h-4' }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <rect x="2" y="2" width="5.2" height="5.2" rx="1.5" />
+      <rect x="9.4" y="2" width="5.2" height="5.2" rx="1.5" />
+      <rect x="16.8" y="2" width="5.2" height="5.2" rx="1.5" />
+      <rect x="2" y="9.4" width="5.2" height="5.2" rx="1.5" />
+      <rect x="9.4" y="9.4" width="5.2" height="5.2" rx="1.5" />
+      <rect x="16.8" y="9.4" width="5.2" height="5.2" rx="1.5" />
+      <rect x="2" y="16.8" width="5.2" height="5.2" rx="1.5" />
+      <rect x="9.4" y="16.8" width="5.2" height="5.2" rx="1.5" />
+      <rect x="16.8" y="16.8" width="5.2" height="5.2" rx="1.5" />
+    </svg>
+  )
+}
+
+// Official AssetPro cyan pixel cluster logo icon
+export function AssetProLogoIcon({ className = 'w-4 h-4' }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <rect x="15" y="2" width="3.2" height="3.2" rx="0.6" />
+      <rect x="19.5" y="2" width="3.2" height="3.2" rx="0.6" />
+      <rect x="18" y="6.5" width="4.8" height="4.8" rx="1" />
+      <rect x="19.6" y="8.1" width="1.6" height="1.6" rx="0.3" fill="#0f172a" />
+      <rect x="19.5" y="12.5" width="3.2" height="3.2" rx="0.6" />
+      <path d="M3 7.5L11 3.5V13.5L3 17.5V7.5Z" opacity="0.95" />
+      <path d="M11 3.5L19 7.5V10.5L11 6.5V3.5Z" opacity="0.75" />
+      <path d="M11 13.5L19 9.5V17.5L11 21.5V13.5Z" opacity="0.85" />
+    </svg>
+  )
+}
+
+// Official Account Soft financial trending bracket logo icon
+export function AccountSoftLogoIcon({ className = 'w-4 h-4' }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 7h12a3 3 0 0 1 3 3v8" />
+      <path d="M7 16l3-3.5 2.5 2.5 4.5-5.5" />
+    </svg>
+  )
+}
+
 // LEADS PERMISSION DEFINITIONS GROUPED BY MODULE
 export const LEADS_PERMISSIONS_SCHEMA = [
   {
@@ -556,8 +599,8 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
   // Synchronize and reset state on modal open or when editingUser changes
   useEffect(() => {
     if (isOpen) {
-      setCurrentStep(1)
       if (editingUser) {
+        setCurrentStep(2)
         setBasicInfo({
           fullName: editingUser.name || '',
           email: editingUser.email || '',
@@ -742,7 +785,7 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
       assignedApps.push({
         name: 'Leads',
         role: appRoles.leads,
-        color: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+        color: 'bg-red-50 text-red-700 border-red-200',
       })
     }
     if (selectedApps.projectsoft) {
@@ -768,9 +811,9 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
     }
     if (selectedApps.assetsoft) {
       assignedApps.push({
-        name: 'AssetSoft',
+        name: 'AssetPro',
         role: appRoles.assetsoft,
-        color: 'bg-blue-50 text-blue-700 border-blue-200',
+        color: 'bg-cyan-50 text-cyan-700 border-cyan-200',
       })
     }
 
@@ -968,12 +1011,12 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
                 key: 'leads',
                 name: 'Leads',
                 subtitle: 'CRM & Calling',
-                icon: Layers,
+                icon: LeadsLogoIcon,
                 roles: ['Staff', 'Manager'],
                 schema: LEADS_PERMISSIONS_SCHEMA,
-                accentBg: 'bg-indigo-600',
-                accentText: 'text-indigo-600',
-                lightBg: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+                accentBg: 'bg-red-600',
+                accentText: 'text-red-600',
+                lightBg: 'bg-red-50 text-red-700 border-red-200',
               },
               {
                 key: 'projectsoft',
@@ -988,9 +1031,9 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
               },
               {
                 key: 'accountsoft',
-                name: 'AccountSoft',
-                subtitle: 'Invoices & PTDA',
-                icon: DollarSign,
+                name: 'Account Soft',
+                subtitle: 'Order · Delivery · Finance',
+                icon: AccountSoftLogoIcon,
                 roles: ['Accounts Executive', 'Accounts Manager'],
                 schema: ACCOUNTS_PERMISSIONS_SCHEMA,
                 accentBg: 'bg-emerald-600',
@@ -1010,14 +1053,14 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
               },
               {
                 key: 'assetsoft',
-                name: 'AssetSoft',
+                name: 'AssetPro',
                 subtitle: 'Office Assets & Devices',
-                icon: Package,
+                icon: AssetProLogoIcon,
                 roles: ['Staff', 'Asset Manager'],
                 schema: ASSETSOFT_PERMISSIONS_SCHEMA,
-                accentBg: 'bg-blue-600',
-                accentText: 'text-blue-600',
-                lightBg: 'bg-blue-50 text-blue-700 border-blue-200',
+                accentBg: 'bg-cyan-500',
+                accentText: 'text-cyan-600',
+                lightBg: 'bg-cyan-50 text-cyan-700 border-cyan-200',
               },
             ]
 
@@ -1277,14 +1320,23 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
               </button>
             </div>
           ) : (
-            <button
-              type="button"
-              onClick={() => setCurrentStep(1)}
-              className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-200/60 rounded-xl transition-colors cursor-pointer"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              <span>Back to Basic Info</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-3.5 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-200/60 rounded-xl transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => setCurrentStep(1)}
+                className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-200/60 rounded-xl transition-colors cursor-pointer"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span>{editingUser ? 'Edit Basic Info' : 'Back to Basic Info'}</span>
+              </button>
+            </div>
           )}
 
           <div className="flex items-center gap-2">

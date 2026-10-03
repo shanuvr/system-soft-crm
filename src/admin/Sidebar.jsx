@@ -1,18 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { Users, LayoutGrid, LogOut, X, ShieldCheck } from 'lucide-react'
 
-// Company geometric building logo matching login screen
-function CompanyLogo({ className = 'w-7 h-7' }) {
-  return (
-    <svg className={className} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M6 14L15 8V33H6V14Z" fill="#2563eb" />
-      <path d="M18 7L32 16V33H18V7Z" fill="#1d4ed8" />
-      <rect x="9.5" y="19" width="5.5" height="14" rx="1" fill="#ffffff" />
-      <rect x="21.5" y="19" width="7" height="14" rx="1" fill="#ffffff" />
-    </svg>
-  )
-}
-
 export default function Sidebar({ isOpen, onClose, onSignOut, user }) {
   const location = useLocation()
 
@@ -51,18 +39,17 @@ export default function Sidebar({ isOpen, onClose, onSignOut, user }) {
       >
         {/* Top Header & Branding */}
         <div>
-          <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
-            <div className="flex items-center gap-3">
-              <CompanyLogo className="w-8 h-8 shrink-0 drop-shadow-xs" />
-              <div>
-                <h1 className="text-base font-bold text-slate-900 tracking-tight leading-tight">
-                  Your Company
-                </h1>
-                <p className="text-[11px] font-semibold text-blue-600 tracking-wide uppercase mt-0.5 flex items-center gap-1">
-                  <ShieldCheck className="w-3 h-3 text-blue-600 inline" />
-                  Admin Portal
-                </p>
-              </div>
+          <div className="flex items-center justify-between px-6 py-4.5 border-b border-slate-100">
+            <div className="flex flex-col items-start gap-1">
+              <img
+                src="/programers-logo-BLACCK.png"
+                alt="PROGRAMERS"
+                className="h-8 w-auto max-w-[150px] object-contain shrink-0"
+              />
+              <p className="text-[10px] font-bold text-blue-600 tracking-wide uppercase flex items-center gap-1">
+                <ShieldCheck className="w-3 h-3 text-blue-600 inline" />
+                Admin Portal
+              </p>
             </div>
 
             {/* Mobile Close Button */}

@@ -22,25 +22,6 @@ import {
 const STAGE_W = 1536
 const STAGE_H = 1024
 
-function CompanyLogo({ className = '', variant = 'white' }) {
-    const isWhite = variant === 'white'
-    const left = isWhite ? '#ffffff' : '#3b82f6'
-    const right = isWhite ? '#e6ecf8' : '#1d4ed8'
-    const win = isWhite ? '#1e3a8a' : '#ffffff'
-    return (
-        <svg className={className} viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M2 19L16 11V41H2V19Z" fill={left} />
-            <path d="M19 3L40 14V41H19V3Z" fill={right} />
-            <rect x="6" y="25" width="5" height="5" rx="1" fill={win} />
-            <rect x="6" y="33" width="5" height="8" rx="1" fill={win} />
-            <rect x="24" y="20" width="4" height="4" rx="1" fill={win} />
-            <rect x="31" y="20" width="4" height="4" rx="1" fill={win} />
-            <rect x="24" y="28" width="4" height="4" rx="1" fill={win} />
-            <rect x="31" y="28" width="4" height="4" rx="1" fill={win} />
-        </svg>
-    )
-}
-
 const svgProps = {
     viewBox: '0 0 24 24',
     fill: 'none',
@@ -70,6 +51,43 @@ function ProjectIcon({ className = '' }) {
             <circle cx="9.5" cy="6.5" r="1.2" fill="currentColor" />
             <circle cx="19" cy="4" r="1.2" fill="currentColor" />
         </svg>
+    )
+}
+
+function SystemSoftLogo({ className = '' }) {
+    return (
+        <div className={`flex items-center gap-4.5 select-none ${className}`}>
+            <div className="w-[74px] h-[74px] rounded-[22px] bg-gradient-to-br from-slate-900/95 via-[#0e1f48]/95 to-slate-800/95 p-1 border border-sky-400/50 shadow-[0_16px_36px_rgba(14,165,233,0.5)] backdrop-blur-md flex items-center justify-center shrink-0 ring-1 ring-white/15">
+                <svg viewBox="0 0 48 48" className="w-12 h-12 drop-shadow-[0_4px_16px_rgba(56,189,248,0.75)]" fill="none">
+                    <defs>
+                        <linearGradient id="ss-logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#38bdf8" />
+                            <stop offset="45%" stopColor="#3b82f6" />
+                            <stop offset="100%" stopColor="#818cf8" />
+                        </linearGradient>
+                    </defs>
+                    <path
+                        d="M14 17C14 12.5 18 9 25 9H31C33.2 9 35 10.8 35 13C35 15.2 33.2 17 31 17H25C21.8 17 20.5 18.2 20.5 20C20.5 21.8 21.8 23 25 24.2L30.5 26.2C35.8 28.2 38 31.5 38 36C38 41.5 34 45 27 45H20C17.8 45 16 43.2 16 41C16 38.8 17.8 37 20 37H27C30.2 37 31.5 35.8 31.5 34C31.5 32.2 30.2 31 27 29.8L21.5 27.8C16.2 25.8 14 22.5 14 17Z"
+                        fill="url(#ss-logo-grad)"
+                    />
+                    <circle cx="33" cy="13" r="2.4" fill="#ffffff" />
+                    <circle cx="18" cy="41" r="2.4" fill="#38bdf8" />
+                </svg>
+            </div>
+            <div className="flex flex-col text-left">
+                <div className="flex items-center gap-3">
+                    <span className="text-[42px] font-black tracking-tight text-white leading-none font-sans drop-shadow-md">
+                        System<span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-blue-400 to-indigo-300">Soft</span>
+                    </span>
+                    <span className="px-3 py-1.5 text-[12.5px] font-black tracking-widest text-sky-200 bg-sky-500/25 border border-sky-400/50 rounded-lg uppercase leading-none shadow-[0_2px_12px_rgba(56,189,248,0.3)]">
+                        CRM
+                    </span>
+                </div>
+                <span className="text-[14px] font-bold tracking-[0.3em] text-slate-300/90 uppercase mt-2 leading-none">
+                    Enterprise Suite
+                </span>
+            </div>
+        </div>
     )
 }
 
@@ -242,8 +260,11 @@ function LoginCard({ mobile, onAuthenticated }) {
                 />
 
                 <div className={`relative z-10 flex flex-col items-center text-center ${mobile ? 'w-full max-w-md mx-auto my-auto' : z.pad}`}>
-                    <CompanyLogo variant="blue" className={z.logo} />
-                    <h2 className={`font-bold tracking-tight text-[#0f1b3d] ${z.name}`}>Your Company</h2>
+                    <img
+                        src="/programers-logo-BLACCK.png"
+                        alt="PROGRAMERS"
+                        className="h-11 sm:h-13 w-auto max-w-[220px] object-contain mb-1.5 drop-shadow-xs"
+                    />
                     <p className={`text-[#64748b] ${z.portal}`}>Employee Portal</p>
 
                     <h3 className={`font-bold tracking-tight text-[#0f1b3d] ${z.welcome}`}>Welcome Back</h3>
@@ -429,11 +450,8 @@ export default function Login({ onAuthenticated }) {
                         />
                     </div>
 
-                    {/* Top-left logo */}
-                    <CompanyLogo variant="white" className="absolute left-[92px] top-[47px] w-[48px] h-[52px]" />
-                    <span className="absolute left-[156px] top-[58px] text-white text-[27px] leading-[38px] font-semibold tracking-tight">
-                        Your Company
-                    </span>
+                    {/* Top-left SystemSoft CRM logo (Vector/Code-based) */}
+                    <SystemSoftLogo className="absolute left-[92px] top-[32px]" />
 
                     {/* Hero */}
                     <p className="absolute left-[91px] top-[170px] text-[16px] leading-[20px] font-medium tracking-[0.2em] text-[#a9b6d4] whitespace-nowrap">
