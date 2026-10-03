@@ -10,6 +10,8 @@ import {
     Users2,
     BarChart3,
     Users,
+    AlertCircle,
+    X,
 } from 'lucide-react'
 
 /*
@@ -109,39 +111,39 @@ const autofillFix = { WebkitBoxShadow: '0 0 0 1000px #fff inset', WebkitTextFill
 
 const SIZES = {
     desktop: {
-        pad: 'px-[68px] py-[54px]',
-        logo: 'w-[64px] h-[64px]',
-        name: 'mt-2 text-[30px] leading-[36px]',
-        portal: 'text-[18px] leading-[22px]',
-        welcome: 'mt-[38px] text-[32px] leading-[38px]',
-        sub: 'mt-1 text-[18px] leading-[24px]',
-        form: 'mt-[32px]',
-        label: 'text-[19px] leading-[26px] mb-[10px] font-semibold text-[#1e293b]',
-        inputH: 'h-[76px] px-[26px] rounded-[18px]',
-        inputText: '21px',
-        icon: 'w-[28px] h-[28px] mr-[18px]',
-        gap: 'mt-[24px]',
-        check: 'w-[24px] h-[24px]',
-        remember: 'text-[18px]',
-        button: 'h-[72px] rounded-[18px] text-[22px] mt-[32px]',
-        terms: 'mt-[28px] text-[16px] leading-[20px]',
+        pad: 'px-[66px] pt-[38px] pb-[36px]',
+        logo: 'w-[58px] h-[58px]',
+        name: 'mt-1.5 text-[28px] leading-[34px]',
+        portal: 'text-[16px] leading-[20px]',
+        welcome: 'mt-[22px] text-[30px] leading-[36px]',
+        sub: 'mt-0.5 text-[17px] leading-[22px]',
+        form: 'mt-[22px]',
+        label: 'text-[18px] leading-[24px] mb-[8px] font-semibold text-[#1e293b]',
+        inputH: 'h-[74px] px-[24px] rounded-[18px]',
+        inputText: '20px',
+        icon: 'w-[26px] h-[26px] mr-[16px]',
+        gap: 'mt-[18px]',
+        check: 'w-[22px] h-[22px]',
+        remember: 'text-[17px]',
+        button: 'h-[68px] rounded-[18px] text-[20px] mt-[24px]',
+        terms: 'mt-[24px] text-[15px] leading-[20px]',
     },
     mobile: {
-        pad: 'px-6 py-10',
-        logo: 'w-[52px] h-[52px]',
-        name: 'mt-2 text-[26px] leading-[32px]',
-        portal: 'text-[15px] leading-[20px]',
-        welcome: 'mt-8 text-[26px] leading-[32px]',
-        sub: 'mt-1 text-[15px] leading-[20px]',
-        form: 'mt-7',
-        label: 'text-[16px] leading-[22px] mb-2 font-semibold text-[#1e293b]',
-        inputH: 'h-[62px] px-4 rounded-[14px]',
-        inputText: '17px',
-        icon: 'w-[24px] h-[24px] mr-3',
-        gap: 'mt-5',
-        check: 'w-[20px] h-[20px]',
-        remember: 'text-[15px]',
-        button: 'h-[60px] rounded-[14px] text-[18px] mt-7',
+        pad: 'px-6 py-8',
+        logo: 'w-[50px] h-[50px]',
+        name: 'mt-1.5 text-[24px] leading-[30px]',
+        portal: 'text-[14px] leading-[18px]',
+        welcome: 'mt-5 text-[24px] leading-[30px]',
+        sub: 'mt-0.5 text-[14px] leading-[18px]',
+        form: 'mt-5',
+        label: 'text-[15px] leading-[20px] mb-1.5 font-semibold text-[#1e293b]',
+        inputH: 'h-[58px] px-4 rounded-[14px]',
+        inputText: '16px',
+        icon: 'w-[22px] h-[22px] mr-3',
+        gap: 'mt-4',
+        check: 'w-[18px] h-[18px]',
+        remember: 'text-[14px]',
+        button: 'h-[56px] rounded-[14px] text-[17px] mt-5',
         terms: 'mt-6 text-[13px] leading-[18px]',
     },
 }
@@ -152,20 +154,46 @@ function LoginCard({ mobile, onAuthenticated }) {
     const [showPassword, setShowPassword] = useState(false)
     const [rememberMe, setRememberMe] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [errorMessage, setErrorMessage] = useState('')
     const z = mobile ? SIZES.mobile : SIZES.desktop
+
+    useEffect(() => {
+        if (errorMessage) {
+            const timer = setTimeout(() => setErrorMessage(''), 4500)
+            return () => clearTimeout(timer)
+        }
+    }, [errorMessage])
 
     const handleSubmit = (e) => {
         e.preventDefault()
+        setErrorMessage('')
         setIsLoading(true)
+
         setTimeout(() => {
             setIsLoading(false)
-            if (onAuthenticated) {
-                onAuthenticated({
-                    email: email || 'user@company.com',
-                    name: email ? email.split('@')[0] : 'Rahul',
-                })
+            const inputUser = email.trim().toLowerCase()
+            const inputPass = password.trim()
+
+            if ((inputUser === 'admin' || inputUser === 'admin@company.com') && inputPass === 'admin') {
+                if (onAuthenticated) {
+                    onAuthenticated({
+                        email: inputUser.includes('@') ? inputUser : 'admin@company.com',
+                        name: 'Admin',
+                        role: 'admin',
+                    })
+                }
+            } else if ((inputUser === 'user' || inputUser === 'user@company.com') && inputPass === 'user') {
+                if (onAuthenticated) {
+                    onAuthenticated({
+                        email: inputUser.includes('@') ? inputUser : 'user@company.com',
+                        name: 'Rahul',
+                        role: 'user',
+                    })
+                }
+            } else {
+                setErrorMessage('Invalid credentials. Please use admin / admin or user / user')
             }
-        }, 600)
+        }, 500)
     }
 
     const inputWrap = `relative flex items-center w-full border-2 border-[#cbd5e1] bg-slate-50/70 hover:bg-white hover:border-[#94a3b8] focus-within:bg-white focus-within:border-blue-600 focus-within:ring-4 focus-within:ring-blue-500/20 shadow-[0_3px_10px_rgba(15,23,42,0.06)] focus-within:shadow-[0_4px_16px_rgba(37,99,235,0.16)] transition-all ${z.inputH}`
@@ -174,121 +202,153 @@ function LoginCard({ mobile, onAuthenticated }) {
     const inputStyle = { ...autofillFix, fontSize: z.inputText }
 
     return (
-        <div
-            className={
-                mobile
-                    ? 'relative w-full max-w-[460px] overflow-hidden shadow-2xl rounded-3xl'
-                    : 'absolute right-[280px] top-1/2 -translate-y-1/2 w-[630px] rounded-[34px] bg-white overflow-hidden shadow-[0_30px_90px_rgba(5,12,40,.4)] border border-slate-100'
-            }
-        >
-            {/* decorative circles */}
-            <div
-                className="absolute rounded-full bg-[#eef5ff]"
-                style={mobile ? { width: 260, height: 260, left: -110, top: -110 } : { width: 400, height: 400, left: -263, top: -164 }}
-            />
-            <div
-                className="absolute rounded-full bg-[#efecfd]"
-                style={mobile ? { width: 200, height: 200, right: -120, bottom: 60 } : { width: 280, height: 280, right: -140, bottom: 110 }}
-            />
-
-            <div className={`relative z-10 flex flex-col items-center text-center ${z.pad}`}>
-                <CompanyLogo variant="blue" className={z.logo} />
-                <h2 className={`font-bold tracking-tight text-[#0f1b3d] ${z.name}`}>Your Company</h2>
-                <p className={`text-[#64748b] ${z.portal}`}>Employee Portal</p>
-
-                <h3 className={`font-bold tracking-tight text-[#0f1b3d] ${z.welcome}`}>Welcome Back</h3>
-                <p className={`text-[#64748b] ${z.sub}`}>Sign in to access your applications</p>
-
-                <form onSubmit={handleSubmit} className={`w-full text-left ${z.form}`}>
-                    <label className={`block font-medium text-[#334155] ${z.label}`}>Email Address</label>
-                    <div className={inputWrap}>
-                        <Mail className={`${z.icon} text-[#6b7280] shrink-0`} strokeWidth={1.7} />
-                        <input
-                            type="email"
-                            required
-                            autoComplete="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="name@company.com"
-                            className={inputCls}
-                            style={inputStyle}
-                        />
+        <>
+            {/* Top-Right Extra Large Floating Error Toast Popup */}
+            {errorMessage && (
+                <div className="fixed top-4 right-4 sm:top-8 sm:right-8 z-50 flex items-center gap-4 sm:gap-5 bg-gradient-to-r from-red-600 via-rose-600 to-red-600 text-white px-5 py-4 sm:px-8 sm:py-5.5 rounded-2xl sm:rounded-3xl shadow-[0_25px_70px_rgba(220,38,38,0.55)] backdrop-blur-md border-2 border-red-300/50 transition-all duration-300 animate-in fade-in slide-in-from-right-8 w-[calc(100vw-32px)] sm:w-[480px]">
+                    <div className="w-10 h-10 sm:w-13 sm:h-13 rounded-xl sm:rounded-2xl bg-white/20 flex items-center justify-center shrink-0 shadow-inner">
+                        <AlertCircle className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
                     </div>
+                    <div className="text-left flex-1 min-w-0">
+                        <p className="font-extrabold text-[15px] sm:text-[19px] tracking-wide text-white">Authentication Failed</p>
+                        <p className="text-xs sm:text-[15px] text-red-100 font-medium mt-0.5 sm:mt-1 leading-snug">{errorMessage}</p>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => setErrorMessage('')}
+                        className="p-1.5 sm:p-2.5 rounded-xl sm:rounded-2xl hover:bg-white/25 transition-colors text-white cursor-pointer shrink-0 ml-1 sm:ml-2"
+                        title="Dismiss"
+                    >
+                        <X className="w-4 h-4 sm:w-6 sm:h-6" />
+                    </button>
+                </div>
+            )}
 
-                    <label className={`block font-medium text-[#334155] ${z.gap} ${z.label}`}>Password</label>
-                    <div className={inputWrap}>
-                        <Lock className={`${z.icon} text-[#6b7280] shrink-0`} strokeWidth={1.7} />
-                        <input
-                            type={showPassword ? 'text' : 'password'}
-                            required
-                            autoComplete="current-password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Enter your password"
-                            className={inputCls}
-                            style={inputStyle}
-                        />
+            <div
+                className={
+                    mobile
+                        ? 'relative w-full min-h-[100dvh] flex flex-col justify-between px-6 py-8 sm:px-10 overflow-hidden bg-white'
+                        : 'absolute right-[280px] top-1/2 -translate-y-1/2 w-[630px] rounded-[34px] bg-white overflow-hidden shadow-[0_30px_90px_rgba(5,12,40,.4)] border border-slate-100'
+                }
+            >
+                {/* decorative circles */}
+                <div
+                    className="absolute rounded-full bg-[#eef5ff] pointer-events-none"
+                    style={mobile ? { width: 280, height: 280, left: -100, top: -100 } : { width: 400, height: 400, left: -263, top: -164 }}
+                />
+                <div
+                    className="absolute rounded-full bg-[#efecfd] pointer-events-none"
+                    style={mobile ? { width: 240, height: 240, right: -100, bottom: -50 } : { width: 280, height: 280, right: -140, bottom: 110 }}
+                />
+
+                <div className={`relative z-10 flex flex-col items-center text-center ${mobile ? 'w-full max-w-md mx-auto my-auto' : z.pad}`}>
+                    <CompanyLogo variant="blue" className={z.logo} />
+                    <h2 className={`font-bold tracking-tight text-[#0f1b3d] ${z.name}`}>Your Company</h2>
+                    <p className={`text-[#64748b] ${z.portal}`}>Employee Portal</p>
+
+                    <h3 className={`font-bold tracking-tight text-[#0f1b3d] ${z.welcome}`}>Welcome Back</h3>
+                    <p className={`text-[#64748b] ${z.sub}`}>Sign in to access your applications</p>
+
+                    <form onSubmit={handleSubmit} autoComplete="off" className={`w-full text-left ${z.form}`}>
+                        <label className={`block font-medium text-[#334155] ${z.label}`}>Email Address / Username</label>
+                        <div className={inputWrap}>
+                            <Mail className={`${z.icon} text-[#6b7280] shrink-0`} strokeWidth={1.7} />
+                            <input
+                                type="text"
+                                name="login_id_field"
+                                required
+                                autoComplete="off"
+                                autoCapitalize="none"
+                                spellCheck="false"
+                                value={email}
+                                onChange={(e) => {
+                                    setEmail(e.target.value)
+                                    if (errorMessage) setErrorMessage('')
+                                }}
+                                className={inputCls}
+                                style={inputStyle}
+                            />
+                        </div>
+
+                        <label className={`block font-medium text-[#334155] ${z.gap} ${z.label}`}>Password</label>
+                        <div className={inputWrap}>
+                            <Lock className={`${z.icon} text-[#6b7280] shrink-0`} strokeWidth={1.7} />
+                            <input
+                                type={showPassword ? 'text' : 'password'}
+                                name="login_key_field"
+                                required
+                                autoComplete="new-password"
+                                spellCheck="false"
+                                value={password}
+                                onChange={(e) => {
+                                    setPassword(e.target.value)
+                                    if (errorMessage) setErrorMessage('')
+                                }}
+                                className={inputCls}
+                                style={inputStyle}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="ml-2 shrink-0 text-[#6b7280] hover:text-slate-700 transition-colors cursor-pointer"
+                                title={showPassword ? 'Hide password' : 'Show password'}
+                            >
+                                {showPassword ? (
+                                    <EyeOff className={z.icon.split(' ').slice(0, 2).join(' ')} strokeWidth={1.7} />
+                                ) : (
+                                    <Eye className={z.icon.split(' ').slice(0, 2).join(' ')} strokeWidth={1.7} />
+                                )}
+                            </button>
+                        </div>
+
+                        <div className={`flex items-center justify-between ${z.gap}`}>
+                            <label className="flex items-center gap-3 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={rememberMe}
+                                    onChange={(e) => setRememberMe(e.target.checked)}
+                                    className={`${z.check} rounded-[5px] border-[#cbd5e1] text-blue-600 focus:ring-blue-500`}
+                                />
+                                <span className={`text-[#475569] ${z.remember}`}>Remember me</span>
+                            </label>
+                            <a
+                                href="#forgot-password"
+                                className={`font-medium text-[#1d6ff2] hover:underline ${z.remember}`}
+                            >
+                                Forgot password?
+                            </a>
+                        </div>
+
                         <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="ml-2 shrink-0 text-[#6b7280] hover:text-slate-700 transition-colors cursor-pointer"
-                            title={showPassword ? 'Hide password' : 'Show password'}
+                            type="submit"
+                            disabled={isLoading}
+                            className={`w-full text-white font-semibold flex items-center justify-center gap-[10px] cursor-pointer active:scale-[0.99] transition disabled:opacity-70 ${z.button}`}
+                            style={{
+                                background: 'linear-gradient(90deg,#1b8cf7 0%,#2f6df1 60%,#3b5fee 100%)',
+                                boxShadow: '0 10px 24px rgba(37,99,235,.28)',
+                            }}
                         >
-                            {showPassword ? (
-                                <EyeOff className={z.icon.split(' ').slice(0, 2).join(' ')} strokeWidth={1.7} />
+                            {isLoading ? (
+                                <span className="inline-block w-6 h-6 border-[3px] border-white/30 border-t-white rounded-full animate-spin" />
                             ) : (
-                                <Eye className={z.icon.split(' ').slice(0, 2).join(' ')} strokeWidth={1.7} />
+                                <>
+                                    <span>Sign In</span>
+                                    <ArrowRight className="w-[22px] h-[22px]" strokeWidth={2} />
+                                </>
                             )}
                         </button>
-                    </div>
+                    </form>
 
-                    <div className={`flex items-center justify-between ${z.gap}`}>
-                        <label className="flex items-center gap-3 cursor-pointer">
-                            <input
-                                type="checkbox"
-                                checked={rememberMe}
-                                onChange={(e) => setRememberMe(e.target.checked)}
-                                className={`${z.check} rounded-[5px] border-[#cbd5e1] text-blue-600 focus:ring-blue-500`}
-                            />
-                            <span className={`text-[#475569] ${z.remember}`}>Remember me</span>
-                        </label>
-                        <a
-                            href="#forgot-password"
-                            className={`font-medium text-[#1d6ff2] hover:underline ${z.remember}`}
-                        >
-                            Forgot password?
+                    <p className={`w-full text-center text-[#64748b] ${z.terms}`}>
+                        By signing in, you agree to our{' '}
+                        <a href="#terms" className="text-[#1d6ff2] hover:underline font-medium">
+                            Terms &amp; Privacy Policy
                         </a>
-                    </div>
-
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className={`w-full text-white font-semibold flex items-center justify-center gap-[10px] cursor-pointer active:scale-[0.99] transition disabled:opacity-70 ${z.button}`}
-                        style={{
-                            background: 'linear-gradient(90deg,#1b8cf7 0%,#2f6df1 60%,#3b5fee 100%)',
-                            boxShadow: '0 10px 24px rgba(37,99,235,.28)',
-                        }}
-                    >
-                        {isLoading ? (
-                            <span className="inline-block w-6 h-6 border-[3px] border-white/30 border-t-white rounded-full animate-spin" />
-                        ) : (
-                            <>
-                                <span>Sign In</span>
-                                <ArrowRight className="w-[22px] h-[22px]" strokeWidth={2} />
-                            </>
-                        )}
-                    </button>
-                </form>
-
-                <p className={`text-center text-[#64748b] ${z.terms}`}>
-                    By signing in, you agree to our{' '}
-                    <a href="#terms" className="text-[#1d6ff2] hover:underline">
-                        Terms &amp; Privacy Policy
-                    </a>
-                    .
-                </p>
+                        .
+                    </p>
+                </div>
             </div>
-        </div>
+        </>
     )
 }
 
@@ -314,13 +374,9 @@ export default function Login({ onAuthenticated }) {
         return () => window.removeEventListener('resize', fit)
     }, [])
 
-    // Mobile / small tablets: just the white card, no background image
+    // Mobile / small tablets: clean full-height mobile layout
     if (view.mobile) {
-        return (
-            <div className="min-h-[100dvh] w-full bg-white flex items-center justify-center overflow-x-hidden font-sans">
-                <LoginCard mobile onAuthenticated={onAuthenticated} />
-            </div>
-        )
+        return <LoginCard mobile onAuthenticated={onAuthenticated} />
     }
 
     return (
