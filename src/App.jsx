@@ -10,6 +10,7 @@ import Login from './Login.jsx'
 import AdminDashboard from './admin/AdminDashboard.jsx'
 import UserManagement from './admin/UserManagement.jsx'
 import Apps from './admin/Apps.jsx'
+import DashboardOverview from './admin/DashboardOverview.jsx'
 import UserDashboard from './user/UserDashboard.jsx'
 
 function AppRoutes() {
@@ -34,7 +35,7 @@ function AppRoutes() {
     }
 
     if (user?.role === 'admin') {
-      navigate('/usermanagement')
+      navigate('/dashboard')
     } else {
       navigate('/dashboard')
     }
@@ -72,12 +73,16 @@ function AppRoutes() {
           )
         }
       >
+        <Route path="/dashboard" element={<DashboardOverview />} />
+        <Route path="/overview" element={<DashboardOverview />} />
         <Route path="/usermanagement" element={<UserManagement />} />
         <Route path="/apps" element={<Apps />} />
 
         {/* Convenient Aliases */}
+        <Route path="/admin" element={<Navigate to="/dashboard" replace />} />
         <Route path="/users" element={<Navigate to="/usermanagement" replace />} />
         <Route path="/user-management" element={<Navigate to="/usermanagement" replace />} />
+        <Route index element={<Navigate to="/dashboard" replace />} />
       </Route>
 
       {/* 3. Employee User Portal */}

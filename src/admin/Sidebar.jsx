@@ -1,10 +1,17 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Users, LayoutGrid, LogOut, X, ShieldCheck } from 'lucide-react'
+import { Users, LayoutGrid, LayoutDashboard, LogOut, X, ShieldCheck } from 'lucide-react'
 
 export default function Sidebar({ isOpen, onClose, onSignOut, user }) {
   const location = useLocation()
 
   const navItems = [
+    {
+      id: 'dashboard',
+      path: '/dashboard',
+      label: 'Dashboard',
+      icon: LayoutDashboard,
+      description: 'Overview & analytics',
+    },
     {
       id: 'usermanagement',
       path: '/usermanagement',
@@ -69,10 +76,10 @@ export default function Sidebar({ isOpen, onClose, onSignOut, user }) {
             {navItems.map((item) => {
               const Icon = item.icon
               const isActive =
-                item.path === '/usermanagement'
-                  ? location.pathname === '/usermanagement' ||
-                    location.pathname === '/users' ||
-                    location.pathname === '/'
+                item.id === 'dashboard'
+                  ? (location.pathname === '/dashboard' || location.pathname === '/overview' || location.pathname === '/admin')
+                  : item.id === 'usermanagement'
+                  ? (location.pathname === '/usermanagement' || location.pathname === '/users' || location.pathname === '/user-management')
                   : location.pathname.startsWith(item.path)
 
               return (
