@@ -120,9 +120,9 @@ const apps = [
 
 const badges = [
     { left: 90, title: 'Secure Access', sub: 'Your data is protected', Icon: ShieldCheck },
-    { left: 265, title: 'Single Sign-On', sub: 'One login for all apps', Icon: Zap },
-    { left: 452, title: 'Role Based Access', sub: 'Right access for right people', Icon: Users2 },
-    { left: 672, title: 'Better Productivity', sub: 'All tools in one place', Icon: BarChart3 },
+    { left: 280, title: 'Single Sign-On', sub: 'One login for all apps', Icon: Zap },
+    { left: 485, title: 'Role Based Access', sub: 'Right access for right people', Icon: Users2 },
+    { left: 710, title: 'Better Productivity', sub: 'All tools in one place', Icon: BarChart3 },
 ]
 
 const autofillFix = { WebkitBoxShadow: '0 0 0 1000px #fff inset', WebkitTextFillColor: '#1e293b' }
@@ -503,14 +503,18 @@ export default function Login({ onAuthenticated }) {
 
                     {/* Bottom badges */}
                     {badges.map(({ left, title, sub, Icon }) => (
-                        <div key={title} className="absolute top-[905px] h-[46px]" style={{ left }}>
-                            <Icon className="absolute left-0 top-[8px] w-[26px] h-[26px] text-[#5da4f7]" strokeWidth={1.6} />
-                            <p className="absolute left-[40px] top-[2px] text-[14px] leading-[20px] font-semibold text-white whitespace-nowrap">
-                                {title}
-                            </p>
-                            <p className="absolute left-[40px] top-[27px] text-[12px] leading-[16px] text-[#aab6d3] whitespace-nowrap">
-                                {sub}
-                            </p>
+                        <div key={title} className="absolute top-[896px] flex items-start gap-3.5" style={{ left }}>
+                            <div className="w-[38px] h-[38px] rounded-xl bg-sky-500/10 border border-sky-400/20 flex items-center justify-center shrink-0 mt-0.5 shadow-[0_2px_10px_rgba(56,189,248,0.15)]">
+                                <Icon className="w-[22px] h-[22px] text-[#38bdf8]" strokeWidth={1.8} />
+                            </div>
+                            <div>
+                                <p className="text-[17px] leading-[22px] font-bold text-white whitespace-nowrap tracking-tight">
+                                    {title}
+                                </p>
+                                <p className="text-[14px] leading-[18px] text-[#cbd5e1] whitespace-nowrap mt-0.5">
+                                    {sub}
+                                </p>
+                            </div>
                         </div>
                     ))}
 

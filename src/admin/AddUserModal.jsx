@@ -17,6 +17,9 @@ import {
   Sparkles,
   Clock,
   Package,
+  Pencil,
+  Upload,
+  Building,
 } from 'lucide-react'
 
 // Official Leads 3x3 rounded grid logo icon
@@ -455,11 +458,11 @@ const ASSETSOFT_PRESETS = {
 function FloatingInput({
   id,
   label,
-  required,
-  type = 'text',
   value,
   onChange,
+  type = 'text',
   placeholder = '',
+  required = false,
   min,
   max,
   className = '',
@@ -467,7 +470,7 @@ function FloatingInput({
 }) {
   const [isFocused, setIsFocused] = useState(false)
   const isFilled = value !== undefined && value !== null && String(value).trim().length > 0
-  const isFloating = isFocused || isFilled
+  const isFloating = isFocused || isFilled || type === 'date'
 
   return (
     <div className={`relative ${className}`}>
@@ -482,21 +485,21 @@ function FloatingInput({
         min={min}
         max={max}
         placeholder={isFocused ? placeholder : ''}
-        className={`w-full px-4 pt-3.5 pb-3 text-sm bg-white border rounded-xl outline-none font-medium text-slate-800 transition-all duration-200 ${
+        className={`w-full px-3 pt-2.5 pb-1.5 text-xs bg-white border rounded-lg outline-none font-medium text-slate-800 transition-all duration-150 ${
           isFocused
-            ? 'border-blue-600 ring-4 ring-blue-500/10 shadow-sm'
+            ? 'border-blue-600 ring-2 ring-blue-500/15 shadow-xs'
             : isFilled
             ? 'border-slate-300 hover:border-slate-400'
-            : 'border-slate-300/80 hover:border-slate-400'
+            : 'border-slate-300 hover:border-slate-400'
         }`}
         {...props}
       />
       <label
         htmlFor={id}
-        className={`absolute left-3.5 px-1.5 transition-all duration-200 pointer-events-none rounded bg-white leading-none z-10 select-none ${
+        className={`absolute left-2.5 px-1 transition-all duration-150 pointer-events-none rounded bg-white leading-none z-10 select-none ${
           isFloating
-            ? '-top-2 text-xs font-semibold ' + (isFocused ? 'text-blue-600' : 'text-slate-600')
-            : 'top-4 text-sm text-slate-400 font-normal'
+            ? '-top-2 text-[10.5px] font-semibold ' + (isFocused ? 'text-blue-600' : 'text-slate-600')
+            : 'top-2.5 text-xs text-slate-400 font-normal'
         }`}
       >
         {label} {required && <span className="text-red-500 font-bold">*</span>}
@@ -505,20 +508,29 @@ function FloatingInput({
   )
 }
 
-function FloatingSelect({ id, label, value, onChange, options, className = '' }) {
+function FloatingSelect({
+  id,
+  label,
+  value,
+  onChange,
+  options,
+  required = false,
+  className = '',
+}) {
   const [isFocused, setIsFocused] = useState(false)
 
   return (
     <div className={`relative ${className}`}>
       <select
         id={id}
+        required={required}
         value={value}
         onChange={onChange}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        className={`w-full px-4 pt-3.5 pb-3 text-sm bg-white border rounded-xl outline-none font-medium text-slate-800 transition-all duration-200 appearance-none cursor-pointer ${
+        className={`w-full px-3 pt-2.5 pb-1.5 text-xs bg-white border rounded-lg outline-none font-medium text-slate-800 transition-all duration-150 appearance-none cursor-pointer ${
           isFocused
-            ? 'border-blue-600 ring-4 ring-blue-500/10 shadow-sm'
+            ? 'border-blue-600 ring-2 ring-blue-500/15 shadow-xs'
             : 'border-slate-300 hover:border-slate-400'
         }`}
       >
@@ -529,18 +541,18 @@ function FloatingSelect({ id, label, value, onChange, options, className = '' })
         ))}
       </select>
       {/* Custom Chevron icon */}
-      <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
         </svg>
       </div>
       <label
         htmlFor={id}
-        className={`absolute left-3.5 -top-2 px-1.5 text-xs font-semibold transition-all duration-200 pointer-events-none rounded bg-white leading-none z-10 select-none ${
+        className={`absolute left-2.5 -top-2 px-1 text-[10.5px] font-semibold transition-all duration-150 pointer-events-none rounded bg-white leading-none z-10 select-none ${
           isFocused ? 'text-blue-600' : 'text-slate-600'
         }`}
       >
-        {label}
+        {label} {required && <span className="text-red-500 font-bold">*</span>}
       </label>
     </div>
   )
@@ -548,29 +560,36 @@ function FloatingSelect({ id, label, value, onChange, options, className = '' })
 
 export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUser = null }) {
   const [currentStep, setCurrentStep] = useState(1)
+  const [isEditingEmpCode, setIsEditingEmpCode] = useState(false)
 
-  // Step 1: Basic Information
+  // Step 1: Comprehensive Employee Basic Information (22 Fields)
   const [basicInfo, setBasicInfo] = useState({
     fullName: '',
     email: '',
+    branch: 'Thrissur Office',
+    department: 'No Department',
+    designation: 'No Designation',
+    role: '',
     phone: '',
-    age: '',
+    emergencyPhone: '',
     address: '',
-    district: '',
-    state: '',
-    department: 'Sales',
-    temporaryPassword: '',
+    state: 'Kerala',
+    district: 'Thrissur',
+    pincode: '',
+    source: '',
+    basicSalary: '0.00',
+    joiningDate: '',
+    incrementDate: '',
+    status: 'Live',
+    bloodGroup: 'Unknown / Not provided',
+    empCode: '',
+    photo: null,
+    photoName: '',
+    signature: null,
+    signatureName: '',
+    resume: null,
+    resumeName: '',
   })
-
-  // Quick temporary password generator
-  const handleGeneratePassword = () => {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789'
-    let pwd = ''
-    for (let i = 0; i < 8; i++) {
-      pwd += chars.charAt(Math.floor(Math.random() * chars.length))
-    }
-    setBasicInfo((prev) => ({ ...prev, temporaryPassword: `${pwd}@1` }))
-  }
 
   // Step 2: Applications Selected
   const [selectedApps, setSelectedApps] = useState({
@@ -604,14 +623,31 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
         setBasicInfo({
           fullName: editingUser.name || '',
           email: editingUser.email || '',
+          branch: editingUser.branch || 'Thrissur Office',
+          department: editingUser.department || 'No Department',
+          designation: editingUser.designation || 'No Designation',
+          role: editingUser.role || 'Staff',
           phone: editingUser.phone || '',
-          age: editingUser.age || '',
+          emergencyPhone: editingUser.emergencyPhone || '',
           address: editingUser.address || '',
-          district: editingUser.district || '',
-          state: editingUser.state || '',
-          department: editingUser.department || 'Sales',
-          temporaryPassword: '',
+          district: editingUser.district || 'Thrissur',
+          state: editingUser.state || 'Kerala',
+          pincode: editingUser.pincode || '',
+          source: editingUser.source || '',
+          basicSalary: editingUser.basicSalary || '0.00',
+          joiningDate: editingUser.joiningDate || '',
+          incrementDate: editingUser.incrementDate || '',
+          status: editingUser.employeeStatus || (editingUser.status === 'Inactive' ? 'Inactive' : 'Live'),
+          bloodGroup: editingUser.bloodGroup || 'Unknown / Not provided',
+          empCode: editingUser.empCode || editingUser.id || `EMP${Math.floor(100 + Math.random() * 900)}`,
+          photo: null,
+          photoName: editingUser.photoName || '',
+          signature: null,
+          signatureName: editingUser.signatureName || '',
+          resume: null,
+          resumeName: editingUser.resumeName || '',
         })
+        setIsEditingEmpCode(false)
 
         const hasLeads = editingUser.apps?.some((a) => a.name.toLowerCase() === 'leads') ?? false
         const hasProj = editingUser.apps?.some((a) => a.name.toLowerCase() === 'projectsoft') ?? false
@@ -660,17 +696,35 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
         else if (hasAsset) setActiveAppTab('assetsoft')
         else setActiveAppTab('leads')
       } else {
-        // Reset to initial clean state for new user
+        // Reset to initial clean state for new user with auto-generated Emp Code
+        setCurrentStep(1)
+        setIsEditingEmpCode(false)
         setBasicInfo({
           fullName: '',
           email: '',
+          branch: 'Thrissur Office',
+          department: 'No Department',
+          designation: 'No Designation',
+          role: '',
           phone: '',
-          age: '',
+          emergencyPhone: '',
           address: '',
-          district: '',
-          state: '',
-          department: 'Sales',
-          temporaryPassword: '',
+          state: 'Kerala',
+          district: 'Thrissur',
+          pincode: '',
+          source: '',
+          basicSalary: '0.00',
+          joiningDate: '',
+          incrementDate: '',
+          status: 'Live',
+          bloodGroup: 'Unknown / Not provided',
+          empCode: `EMP${Math.floor(100 + Math.random() * 900)}`,
+          photo: null,
+          photoName: '',
+          signature: null,
+          signatureName: '',
+          resume: null,
+          resumeName: '',
         })
         setSelectedApps({
           leads: true,
@@ -775,6 +829,10 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
       alert('Please fill in Full Name and Email Address.')
       return
     }
+    if (!basicInfo.role) {
+      alert('Please select a Role for the employee.')
+      return
+    }
     setCurrentStep(2)
   }
 
@@ -827,12 +885,27 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
         ...editingUser,
         name: basicInfo.fullName,
         email: basicInfo.email,
+        empCode: basicInfo.empCode,
+        branch: basicInfo.branch,
+        department: basicInfo.department,
+        designation: basicInfo.designation,
+        role: basicInfo.role,
         phone: basicInfo.phone,
-        age: basicInfo.age,
+        emergencyPhone: basicInfo.emergencyPhone,
         address: basicInfo.address,
         district: basicInfo.district,
         state: basicInfo.state,
-        department: basicInfo.department,
+        pincode: basicInfo.pincode,
+        source: basicInfo.source,
+        basicSalary: basicInfo.basicSalary,
+        joiningDate: basicInfo.joiningDate,
+        incrementDate: basicInfo.incrementDate,
+        status: basicInfo.status === 'Inactive' ? 'Inactive' : 'Active',
+        employeeStatus: basicInfo.status,
+        bloodGroup: basicInfo.bloodGroup,
+        photoName: basicInfo.photoName,
+        signatureName: basicInfo.signatureName,
+        resumeName: basicInfo.resumeName,
         apps: assignedApps,
         permissions: permissions,
       }
@@ -841,16 +914,30 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
       }
     } else {
       const newUser = {
-        id: `EMP${Math.floor(100 + Math.random() * 900)}`,
+        id: basicInfo.empCode || `EMP${Math.floor(100 + Math.random() * 900)}`,
+        empCode: basicInfo.empCode,
         name: basicInfo.fullName,
         email: basicInfo.email,
+        branch: basicInfo.branch,
+        department: basicInfo.department,
+        designation: basicInfo.designation,
+        role: basicInfo.role,
         phone: basicInfo.phone,
-        age: basicInfo.age,
+        emergencyPhone: basicInfo.emergencyPhone,
         address: basicInfo.address,
         district: basicInfo.district,
         state: basicInfo.state,
-        department: basicInfo.department,
-        status: 'Active',
+        pincode: basicInfo.pincode,
+        source: basicInfo.source,
+        basicSalary: basicInfo.basicSalary,
+        joiningDate: basicInfo.joiningDate,
+        incrementDate: basicInfo.incrementDate,
+        status: basicInfo.status === 'Inactive' ? 'Inactive' : 'Active',
+        employeeStatus: basicInfo.status,
+        bloodGroup: basicInfo.bloodGroup,
+        photoName: basicInfo.photoName,
+        signatureName: basicInfo.signatureName,
+        resumeName: basicInfo.resumeName,
         apps: assignedApps,
         permissions: permissions,
       }
@@ -862,143 +949,431 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 backdrop-blur-xs font-sans animate-in fade-in duration-200">
-      <div className="bg-white rounded-[24px] w-full max-w-xl sm:max-w-[660px] max-h-[90vh] shadow-2xl flex flex-col overflow-hidden border border-slate-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/60 backdrop-blur-xs font-sans animate-in fade-in duration-200">
+      <div className="bg-white rounded-2xl w-full max-w-2xl sm:max-w-3xl lg:max-w-[860px] max-h-[94vh] shadow-2xl flex flex-col overflow-hidden border border-slate-200">
         {/* Modal Header */}
-        <div className="px-5 sm:px-6 py-4 bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 text-white flex items-center justify-between shrink-0">
+        <div className="px-5 py-3 bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 text-white flex items-center justify-between shrink-0">
           <div>
             <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full bg-white/20 text-[11px] font-bold tracking-wide uppercase">
+              <span className="px-2 py-0.5 rounded-full bg-white/20 text-[10px] font-bold tracking-wide uppercase">
                 Step {currentStep} of 2
               </span>
-              <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">
+              <h2 className="text-base font-bold text-white tracking-tight">
                 {editingUser ? `Manage Access: ${editingUser.name}` : 'Add New Employee User'}
               </h2>
             </div>
-            <p className="text-xs text-blue-100 mt-0.5">
+            <p className="text-[11px] text-blue-100 mt-0.5">
               {currentStep === 1
-                ? 'Step 1: Enter employee personal & organizational information'
+                ? 'Step 1: Enter employee personal, contact & organizational profile details'
                 : 'Step 2: Assign application access, roles, and granular functional permissions'}
             </p>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl hover:bg-white/20 transition-colors text-white cursor-pointer"
+            className="p-1 rounded-lg hover:bg-white/20 transition-colors text-white cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Modal Body (Scrollable) */}
-        <div className="flex-1 overflow-y-auto p-5 sm:p-6">
-          {/* STEP 1: BASIC INFORMATION */}
+        <div className="flex-1 overflow-y-auto p-3.5 sm:p-5">
+          {/* STEP 1: COMPREHENSIVE EMPLOYEE INFORMATION (22 FIELDS) */}
           {currentStep === 1 && (
-            <form id="step1-form" onSubmit={handleNextStep} className="pt-1 pb-1">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4.5">
-                {/* Full Name */}
-                <FloatingInput
-                  id="fullName"
-                  label="Full Name"
-                  required
-                  value={basicInfo.fullName}
-                  onChange={(e) => setBasicInfo({ ...basicInfo, fullName: e.target.value })}
-                  placeholder="e.g. Arun Kumar"
-                />
-
-                {/* Email Address */}
-                <FloatingInput
-                  id="email"
-                  label="Email Address"
-                  type="email"
-                  required
-                  value={basicInfo.email}
-                  onChange={(e) => setBasicInfo({ ...basicInfo, email: e.target.value })}
-                  placeholder="e.g. arun@company.com"
-                />
-
-                {/* Phone Number */}
-                <FloatingInput
-                  id="phone"
-                  label="Phone Number"
-                  type="tel"
-                  value={basicInfo.phone}
-                  onChange={(e) => setBasicInfo({ ...basicInfo, phone: e.target.value })}
-                  placeholder="+91 98765 43210"
-                />
-
-                {/* Age */}
-                <FloatingInput
-                  id="age"
-                  label="Age"
-                  type="number"
-                  min="18"
-                  max="80"
-                  value={basicInfo.age}
-                  onChange={(e) => setBasicInfo({ ...basicInfo, age: e.target.value })}
-                  placeholder="e.g. 28"
-                />
-
-                {/* Address (full width) */}
-                <FloatingInput
-                  id="address"
-                  label="Address"
-                  className="sm:col-span-2"
-                  value={basicInfo.address}
-                  onChange={(e) => setBasicInfo({ ...basicInfo, address: e.target.value })}
-                  placeholder="House / Street / Flat / Area Details"
-                />
-
-                {/* District */}
-                <FloatingInput
-                  id="district"
-                  label="District"
-                  value={basicInfo.district}
-                  onChange={(e) => setBasicInfo({ ...basicInfo, district: e.target.value })}
-                  placeholder="e.g. Ernakulam / Bengaluru"
-                />
-
-                {/* State */}
-                <FloatingInput
-                  id="state"
-                  label="State"
-                  value={basicInfo.state}
-                  onChange={(e) => setBasicInfo({ ...basicInfo, state: e.target.value })}
-                  placeholder="e.g. Kerala / Karnataka"
-                />
-
-                {/* Department Dropdown */}
-                <FloatingSelect
-                  id="department"
-                  label="Department"
-                  value={basicInfo.department}
-                  onChange={(e) => setBasicInfo({ ...basicInfo, department: e.target.value })}
-                  options={[
-                    { value: 'Sales', label: 'Sales & Marketing' },
-                    { value: 'Technology', label: 'Technology & Engineering' },
-                    { value: 'Finance & Accounts', label: 'Finance & Accounts' },
-                    { value: 'Operations', label: 'Operations & Administration' },
-                  ]}
-                />
-
-                {/* Password with Auto-Generate Action */}
-                <div className="relative">
+            <form id="step1-form" onSubmit={handleNextStep} className="space-y-3.5">
+              {/* Section 1: Basic & Identity */}
+              <div>
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
+                  <User className="w-3.5 h-3.5 text-blue-600" />
+                  Basic &amp; Identity Details
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-3 gap-y-2.5">
+                  {/* Full Name * */}
                   <FloatingInput
-                    id="password"
-                    label="Password"
-                    value={basicInfo.temporaryPassword}
-                    onChange={(e) =>
-                      setBasicInfo({ ...basicInfo, temporaryPassword: e.target.value })
-                    }
-                    placeholder="e.g. Welcome@123"
+                    id="fullName"
+                    label="Full Name"
+                    required
+                    value={basicInfo.fullName}
+                    onChange={(e) => setBasicInfo({ ...basicInfo, fullName: e.target.value })}
+                    placeholder="e.g. Rahul Sharma"
                   />
-                  <button
-                    type="button"
-                    onClick={handleGeneratePassword}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 px-2.5 py-1 text-[11px] font-bold bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg transition-colors cursor-pointer border border-blue-200/60"
-                  >
-                    Generate
-                  </button>
+
+                  {/* Email Address * */}
+                  <FloatingInput
+                    id="email"
+                    label="Email Address"
+                    type="email"
+                    required
+                    value={basicInfo.email}
+                    onChange={(e) => setBasicInfo({ ...basicInfo, email: e.target.value })}
+                    placeholder="e.g. rahul@company.com"
+                  />
+
+                  {/* Emp Code * with Auto-generated indicator & Pencil Toggle */}
+                  <div className="relative">
+                    <div className="relative">
+                      <input
+                        id="empCode"
+                        type="text"
+                        required
+                        readOnly={!isEditingEmpCode}
+                        value={basicInfo.empCode}
+                        onChange={(e) => setBasicInfo({ ...basicInfo, empCode: e.target.value })}
+                        className={`w-full px-3 pt-2.5 pb-1.5 pr-8 text-xs rounded-lg outline-none font-medium transition-all duration-150 border ${
+                          isEditingEmpCode
+                            ? 'bg-white border-blue-600 ring-2 ring-blue-500/15 text-slate-900 shadow-xs'
+                            : 'bg-slate-50/80 border-slate-300 text-slate-700 cursor-default'
+                        }`}
+                      />
+                      <label
+                        htmlFor="empCode"
+                        className="absolute left-2.5 -top-2 px-1 text-[10.5px] font-semibold rounded bg-white leading-none z-10 text-slate-600"
+                      >
+                        Emp Code <span className="text-red-500 font-bold">*</span>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setIsEditingEmpCode(!isEditingEmpCode)}
+                        className={`absolute right-1.5 top-1/2 -translate-y-1/2 p-1 rounded-md transition-colors cursor-pointer ${
+                          isEditingEmpCode
+                            ? 'bg-blue-600 text-white shadow-xs'
+                            : 'text-slate-400 hover:text-slate-700 hover:bg-slate-200'
+                        }`}
+                        title={isEditingEmpCode ? 'Lock Emp Code' : 'Edit Emp Code'}
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                    <p className="text-[9.5px] text-slate-400 mt-0.5 pl-0.5 leading-tight">
+                      Auto-generated. Use the pencil to enter your own.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 2: Organizational Placement */}
+              <div>
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
+                  <Briefcase className="w-3.5 h-3.5 text-blue-600" />
+                  Organizational Placement &amp; Role
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-3 gap-y-2.5">
+                  {/* Branch * */}
+                  <FloatingSelect
+                    id="branch"
+                    label="Branch"
+                    required
+                    value={basicInfo.branch}
+                    onChange={(e) => setBasicInfo({ ...basicInfo, branch: e.target.value })}
+                    options={[
+                      { value: 'Thrissur Office', label: 'Thrissur Office' },
+                      { value: 'Kochi Office', label: 'Kochi Office' },
+                      { value: 'Calicut Office', label: 'Calicut Office' },
+                      { value: 'Trivandrum Office', label: 'Trivandrum Office' },
+                      { value: 'Bangalore Office', label: 'Bangalore Office' },
+                    ]}
+                  />
+
+                  {/* Department */}
+                  <FloatingSelect
+                    id="department"
+                    label="Department"
+                    value={basicInfo.department}
+                    onChange={(e) => setBasicInfo({ ...basicInfo, department: e.target.value })}
+                    options={[
+                      { value: 'No Department', label: 'No Department' },
+                      { value: 'Marketing', label: 'Marketing' },
+                      { value: 'Projects', label: 'Projects' },
+                      { value: 'HR', label: 'HR' },
+                    ]}
+                  />
+
+                  {/* Designation */}
+                  <FloatingSelect
+                    id="designation"
+                    label="Designation"
+                    value={basicInfo.designation}
+                    onChange={(e) => setBasicInfo({ ...basicInfo, designation: e.target.value })}
+                    options={[
+                      { value: 'No Designation', label: 'No Designation' },
+                      { value: 'Software Engineer', label: 'Software Engineer' },
+                      { value: 'Senior Developer', label: 'Senior Developer' },
+                      { value: 'Project Manager', label: 'Project Manager' },
+                      { value: 'Marketing Executive', label: 'Marketing Executive' },
+                      { value: 'Sales Executive', label: 'Sales Executive' },
+                      { value: 'HR Executive', label: 'HR Executive' },
+                      { value: 'Operations Lead', label: 'Operations Lead' },
+                      { value: 'UI/UX Designer', label: 'UI/UX Designer' },
+                      { value: 'Accountant', label: 'Accountant' },
+                    ]}
+                  />
+
+                  {/* Role * */}
+                  <FloatingSelect
+                    id="role"
+                    label="Role"
+                    required
+                    value={basicInfo.role}
+                    onChange={(e) => setBasicInfo({ ...basicInfo, role: e.target.value })}
+                    options={[
+                      { value: '', label: 'Select Role' },
+                      { value: 'Admin', label: 'Admin' },
+                      { value: 'Manager', label: 'Manager' },
+                      { value: 'Staff', label: 'Staff' },
+                      { value: 'Employee', label: 'Employee' },
+                      { value: 'Intern', label: 'Intern' },
+                    ]}
+                  />
+
+                  {/* Status */}
+                  <FloatingSelect
+                    id="status"
+                    label="Status"
+                    value={basicInfo.status}
+                    onChange={(e) => setBasicInfo({ ...basicInfo, status: e.target.value })}
+                    options={[
+                      { value: 'Live', label: 'Live' },
+                      { value: 'Probation', label: 'Probation' },
+                      { value: 'Notice Period', label: 'Notice Period' },
+                      { value: 'Inactive', label: 'Inactive' },
+                    ]}
+                  />
+
+                  {/* Blood Group */}
+                  <FloatingSelect
+                    id="bloodGroup"
+                    label="Blood Group"
+                    value={basicInfo.bloodGroup}
+                    onChange={(e) => setBasicInfo({ ...basicInfo, bloodGroup: e.target.value })}
+                    options={[
+                      { value: 'Unknown / Not provided', label: 'Unknown / Not provided' },
+                      { value: 'A+', label: 'A+' },
+                      { value: 'A-', label: 'A-' },
+                      { value: 'B+', label: 'B+' },
+                      { value: 'B-', label: 'B-' },
+                      { value: 'O+', label: 'O+' },
+                      { value: 'O-', label: 'O-' },
+                      { value: 'AB+', label: 'AB+' },
+                      { value: 'AB-', label: 'AB-' },
+                    ]}
+                  />
+                </div>
+              </div>
+
+              {/* Section 3: Contact & Address */}
+              <div>
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
+                  <Users className="w-3.5 h-3.5 text-blue-600" />
+                  Contact &amp; Location Details
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-3 gap-y-2.5">
+                  {/* Mobile Number * */}
+                  <FloatingInput
+                    id="phone"
+                    label="Mobile Number"
+                    type="tel"
+                    required
+                    value={basicInfo.phone}
+                    onChange={(e) => setBasicInfo({ ...basicInfo, phone: e.target.value })}
+                    placeholder="e.g. +91 9876543210"
+                  />
+
+                  {/* Emergency Contact Number * */}
+                  <FloatingInput
+                    id="emergencyPhone"
+                    label="Emergency Contact Number"
+                    type="tel"
+                    required
+                    value={basicInfo.emergencyPhone}
+                    onChange={(e) => setBasicInfo({ ...basicInfo, emergencyPhone: e.target.value })}
+                    placeholder="e.g. +91 9876501234"
+                  />
+
+                  {/* PIN Code * */}
+                  <FloatingInput
+                    id="pincode"
+                    label="PIN Code"
+                    required
+                    value={basicInfo.pincode}
+                    onChange={(e) => setBasicInfo({ ...basicInfo, pincode: e.target.value })}
+                    placeholder="e.g. 560001"
+                  />
+
+                  {/* Street Address * (spans full width) */}
+                  <FloatingInput
+                    id="address"
+                    label="Street Address"
+                    required
+                    className="sm:col-span-2 lg:col-span-3"
+                    value={basicInfo.address}
+                    onChange={(e) => setBasicInfo({ ...basicInfo, address: e.target.value })}
+                    placeholder="123 Tech Park, Phase II"
+                  />
+
+                  {/* State * */}
+                  <FloatingInput
+                    id="state"
+                    label="State"
+                    required
+                    value={basicInfo.state}
+                    onChange={(e) => setBasicInfo({ ...basicInfo, state: e.target.value })}
+                    placeholder="Kerala"
+                  />
+
+                  {/* District * */}
+                  <FloatingInput
+                    id="district"
+                    label="District"
+                    required
+                    value={basicInfo.district}
+                    onChange={(e) => setBasicInfo({ ...basicInfo, district: e.target.value })}
+                    placeholder="Thrissur"
+                  />
+
+                  {/* Source * */}
+                  <FloatingInput
+                    id="source"
+                    label="Source"
+                    required
+                    value={basicInfo.source}
+                    onChange={(e) => setBasicInfo({ ...basicInfo, source: e.target.value })}
+                    placeholder="e.g. Referral, LinkedIn"
+                  />
+                </div>
+              </div>
+
+              {/* Section 4: Compensation & Dates */}
+              <div>
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
+                  <DollarSign className="w-3.5 h-3.5 text-blue-600" />
+                  Employment Terms &amp; Compensation
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-3 gap-y-2.5">
+                  {/* Basic Salary (₹) * */}
+                  <FloatingInput
+                    id="basicSalary"
+                    label="Basic Salary (₹)"
+                    required
+                    value={basicInfo.basicSalary}
+                    onChange={(e) => setBasicInfo({ ...basicInfo, basicSalary: e.target.value })}
+                    placeholder="0.00"
+                  />
+
+                  {/* Joining Date * */}
+                  <FloatingInput
+                    id="joiningDate"
+                    label="Joining Date"
+                    type="date"
+                    required
+                    value={basicInfo.joiningDate}
+                    onChange={(e) => setBasicInfo({ ...basicInfo, joiningDate: e.target.value })}
+                  />
+
+                  {/* Increment Date (optional) */}
+                  <FloatingInput
+                    id="incrementDate"
+                    label="Increment Date (optional)"
+                    type="date"
+                    value={basicInfo.incrementDate}
+                    onChange={(e) => setBasicInfo({ ...basicInfo, incrementDate: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              {/* Section 5: Document & Media Uploads */}
+              <div>
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
+                  <FileText className="w-3.5 h-3.5 text-blue-600" />
+                  Employee Documents &amp; Media
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  {/* Employee Photo */}
+                  <div className="p-2.5 rounded-lg border border-slate-200 bg-slate-50/50 flex flex-col justify-between space-y-1.5">
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-700 block">Employee Photo</label>
+                      <p className="text-[10px] text-slate-400 truncate">
+                        {basicInfo.photoName || 'No file chosen'}
+                      </p>
+                    </div>
+                    <label className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1 bg-white border border-slate-300 hover:border-blue-500 hover:text-blue-600 text-slate-700 text-[11px] font-semibold rounded-md shadow-2xs transition-all cursor-pointer">
+                      <Upload className="w-3 h-3" />
+                      <span>Upload Photo</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          if (file) {
+                            setBasicInfo({
+                              ...basicInfo,
+                              photo: file,
+                              photoName: file.name,
+                            })
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+
+                  {/* Signature */}
+                  <div className="p-2.5 rounded-lg border border-slate-200 bg-slate-50/50 flex flex-col justify-between space-y-1.5">
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-700 block">Signature</label>
+                      <p className="text-[10px] text-slate-400 truncate">
+                        {basicInfo.signatureName || 'No file chosen'}
+                      </p>
+                    </div>
+                    <label className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1 bg-white border border-slate-300 hover:border-blue-500 hover:text-blue-600 text-slate-700 text-[11px] font-semibold rounded-md shadow-2xs transition-all cursor-pointer">
+                      <Upload className="w-3 h-3" />
+                      <span>Upload Signature</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          if (file) {
+                            setBasicInfo({
+                              ...basicInfo,
+                              signature: file,
+                              signatureName: file.name,
+                            })
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+
+                  {/* Biodata / Resume */}
+                  <div className="p-2.5 rounded-lg border border-slate-200 bg-slate-50/50 flex flex-col justify-between space-y-1.5">
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-700 block">Biodata / Resume</label>
+                      <p className="text-[10px] text-slate-400 truncate">
+                        {basicInfo.resumeName || 'No file chosen'}
+                      </p>
+                    </div>
+                    <label className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1 bg-white border border-slate-300 hover:border-blue-500 hover:text-blue-600 text-slate-700 text-[11px] font-semibold rounded-md shadow-2xs transition-all cursor-pointer">
+                      <Upload className="w-3 h-3" />
+                      <span>Upload Resume</span>
+                      <input
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          if (file) {
+                            setBasicInfo({
+                              ...basicInfo,
+                              resume: file,
+                              resumeName: file.name,
+                            })
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
                 </div>
               </div>
             </form>
@@ -1308,13 +1683,13 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
         </div>
 
         {/* Modal Footer Controls */}
-        <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between shrink-0">
+        <div className="px-5 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between shrink-0">
           {currentStep === 1 ? (
             <div>
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-200/60 rounded-xl transition-colors cursor-pointer"
+                className="px-3.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-200/60 rounded-lg transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -1324,16 +1699,16 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
               <button
                 type="button"
                 onClick={onClose}
-                className="px-3.5 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-200/60 rounded-xl transition-colors cursor-pointer"
+                className="px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-200/60 rounded-lg transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={() => setCurrentStep(1)}
-                className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-200/60 rounded-xl transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-200/60 rounded-lg transition-colors cursor-pointer"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-3.5 h-3.5" />
                 <span>{editingUser ? 'Edit Basic Info' : 'Back to Basic Info'}</span>
               </button>
             </div>
@@ -1344,18 +1719,18 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated, editingUs
               <button
                 type="submit"
                 form="step1-form"
-                className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white text-xs font-bold rounded-xl shadow-md shadow-blue-500/25 transition-all cursor-pointer active:scale-[0.99]"
+                className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white text-xs font-bold rounded-lg shadow-sm shadow-blue-500/20 transition-all cursor-pointer active:scale-[0.99]"
               >
                 <span>Continue to Permissions</span>
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-3.5 h-3.5" />
               </button>
             ) : (
               <button
                 type="button"
                 onClick={handleSubmitFinal}
-                className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-600/25 transition-all cursor-pointer active:scale-[0.99]"
+                className="flex items-center gap-1.5 px-5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold rounded-lg shadow-sm shadow-emerald-600/20 transition-all cursor-pointer active:scale-[0.99]"
               >
-                <Check className="w-4 h-4" />
+                <Check className="w-3.5 h-3.5" />
                 <span>{editingUser ? 'Save Changes & Update Permissions' : 'Create User & Save Access'}</span>
               </button>
             )}
